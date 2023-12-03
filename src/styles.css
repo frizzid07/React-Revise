@@ -77,6 +77,12 @@ body {
   display: table;
 }
 
+.board[disabled]
+{
+  pointer-events: none;
+  opacity: 0.5;
+}
+
 .status {
   margin-bottom: 10px;
 }
@@ -87,4 +93,9 @@ body {
 
 .game-info {
   margin-left: 20px;
+}
+
+.options {
+  margin: 10px;
+  padding: 10px;
 }

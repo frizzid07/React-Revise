@@ -12,8 +12,10 @@ export default function Board() {
   const [squares, setSquares] = useState(Array(9).fill(null));
   const [turn, setTurn] = useState(true);
   const [winner, setWinner] = useState(null);
+  const [tie, setTie] = useState(false);
   const [index, setIndex] = useState(0);
   const [turnsPlayed, setTurnsPlayed] = useState(0);
+  const [updateDone, setUpdateDone] = useState(false);
 
   var relations = {
     0: [
@@ -78,85 +80,111 @@ export default function Board() {
     return null;
   }
 
+  function updateWinner() {
+    var winnerNow = turnsPlayed <= 9 ? isWinner(index) : null;
+    if (winnerNow) setWinner(winnerNow);
+  }
+  
   useEffect(() => {
-    var winner = turnsPlayed < 9 ? isWinner(index) : null;
-    if (turnsPlayed >= 9) setWinner(null);
-    if (winner && turnsPlayed < 9) setWinner(winner);
+    updateWinner();
+    setUpdateDone(true);
   }, [turnsPlayed, index]);
+
+  useEffect(() => {
+    if(updateDone && !winner && turnsPlayed == 9) setTie(true);
+    setUpdateDone(false);
+  }, [updateDone]);
 
   function onClick(i) {
     const curSquares = squares.slice();
-    curSquares[i] = turn ? "X" : "O";
-    setSquares(curSquares);
-    setTurn(!turn);
-    setIndex(i);
-    setTurnsPlayed(turnsPlayed + 1);
+    if (!curSquares[i]) {
+      curSquares[i] = turn ? "X" : "O";
+      setSquares(curSquares);
+      setTurn(!turn);
+      setIndex(i);
+      setTurnsPlayed(turnsPlayed + 1);
+    }
+  }
+
+  function clear() {
+    setSquares(Array(9).fill(null));
+    setTurn(true);
+    setWinner(null);
+    setTie(false);
+    setIndex(0);
+    setTurnsPlayed(0);
   }
 
   return (
     <>
       <div className="status">
         {winner && <p>Player {winner} won the game</p>}
+        {tie && <p>Game tied! Clear the board to start again</p>}
       </div>
-      <div className="board-row">
-        <Square
-          value={squares[0]}
-          onClick={() => {
-            onClick(0);
-          }}
-        />
-        <Square
-          value={squares[1]}
-          onClick={() => {
-            onClick(1);
-          }}
-        />
-        <Square
-          value={squares[2]}
-          onClick={() => {
-            onClick(2);
-          }}
-        />
+      <div className="board" disabled={winner != null}>
+        <div className="board-row">
+          <Square
+            value={squares[0]}
+            onClick={() => {
+              onClick(0);
+            }}
+          />
+          <Square
+            value={squares[1]}
+            onClick={() => {
+              onClick(1);
+            }}
+          />
+          <Square
+            value={squares[2]}
+            onClick={() => {
+              onClick(2);
+            }}
+          />
+        </div>
+        <div className="board-row">
+          <Square
+            value={squares[3]}
+            onClick={() => {
+              onClick(3);
+            }}
+          />
+          <Square
+            value={squares[4]}
+            onClick={() => {
+              onClick(4);
+            }}
+          />
+          <Square
+            value={squares[5]}
+            onClick={() => {
+              onClick(5);
+            }}
+          />
+        </div>
+        <div className="board-row">
+          <Square
+            value={squares[6]}
+            onClick={() => {
+              onClick(6);
+            }}
+          />
+          <Square
+            value={squares[7]}
+            onClick={() => {
+              onClick(7);
+            }}
+          />
+          <Square
+            value={squares[8]}
+            onClick={() => {
+              onClick(8);
+            }}
+          />
+        </div>
       </div>
-      <div className="board-row">
-        <Square
-          value={squares[3]}
-          onClick={() => {
-            onClick(3);
-          }}
-        />
-        <Square
-          value={squares[4]}
-          onClick={() => {
-            onClick(4);
-          }}
-        />
-        <Square
-          value={squares[5]}
-          onClick={() => {
-            onClick(5);
-          }}
-        />
-      </div>
-      <div className="board-row">
-        <Square
-          value={squares[6]}
-          onClick={() => {
-            onClick(6);
-          }}
-        />
-        <Square
-          value={squares[7]}
-          onClick={() => {
-            onClick(7);
-          }}
-        />
-        <Square
-          value={squares[8]}
-          onClick={() => {
-            onClick(8);
-          }}
-        />
+      <div className="options">
+          <button onClick={() => {clear()}}>Clear</button>
       </div>
     </>
   );
